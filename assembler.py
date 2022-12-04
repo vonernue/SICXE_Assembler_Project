@@ -163,7 +163,7 @@ def main(args):
     firstPass(f)
     f = open(args.input, 'r')
     secondPass(f)
-    # print(tList)
+    print(tList)
     if args.symtab:
         printSymtab(SYMTAB)
     objProg = genObjFile()

@@ -1,3 +1,4 @@
+import sys
 from utils.tables import *
 
 def flagConstructor(n, i, x, b, p, e):
@@ -5,6 +6,10 @@ def flagConstructor(n, i, x, b, p, e):
     Construct the flags for the object code.
     """
     return n << 5 | i << 4 | x << 3 | b << 2 | p << 1 | e
+
+def twosComp(val, bytes):
+    b = val.to_bytes(bytes, byteorder=sys.byteorder, signed=True)   
+    return int.from_bytes(b, byteorder=sys.byteorder, signed=False)
 
 class Handler:
     def __init__(self, line, symbol, op, arg1, arg2, PC, BASE, SYMTAB):
@@ -102,18 +107,13 @@ class Handler:
                 TA = self.SYMTAB[self.arg1] - self.PC
                 # PC Relative
                 if TA >= -2048 and TA <= 2047:  
-                    if TA > 0:
-                        obj = int(OPCODETAB[self.op][1], 16) 
-                        obj = obj << 4
-                        obj += flagConstructor(0, 1, 0, 0, 1, 0)
-                        obj = obj << 12
-                        obj += TA
-                    else:
-                        obj = int(OPCODETAB[self.op][1], 16) 
-                        obj = obj << 4
-                        obj += flagConstructor(0, 1, 0, 0, 0, 0)
-                        obj = obj << 12
-                        obj += TA
+                    if TA < 0:
+                        TA = twosComp(TA, 2) & int("1111000000000000", 2)
+                    obj = int(OPCODETAB[self.op][1], 16) 
+                    obj = obj << 4
+                    obj += flagConstructor(0, 1, 0, 0, 1, 0)
+                    obj = obj << 12
+                    obj += TA
                 # Base Relative
                 else:   
                     TA = self.SYMTAB[self.arg1] - self.BASE
@@ -137,18 +137,13 @@ class Handler:
             TA = self.SYMTAB[self.arg1] - self.PC
             # PC Relative
             if TA >= -2048 and TA <= 2047:  
-                if TA > 0:
-                    obj = int(OPCODETAB[self.op][1], 16) 
-                    obj = obj << 4
-                    obj += flagConstructor(1, 0, 0, 0, 1, 0)
-                    obj = obj << 12
-                    obj += TA
-                else:
-                    obj = int(OPCODETAB[self.op][1], 16) 
-                    obj = obj << 4
-                    obj += flagConstructor(1, 0, 0, 0, 0, 0)
-                    obj = obj << 12
-                    obj += TA
+                if TA < 0:
+                    TA = twosComp(TA, 2) & int("1111000000000000", 2)
+                obj = int(OPCODETAB[self.op][1], 16) 
+                obj = obj << 4
+                obj += flagConstructor(1, 0, 0, 0, 0, 0)
+                obj = obj << 12
+                obj += TA
             # Base Relative
             else:   
                 TA = self.SYMTAB[self.arg1] - self.BASE
@@ -166,25 +161,20 @@ class Handler:
             TA = self.SYMTAB[self.arg1] - self.PC
             # PC Relative
             if TA >= -2048 and TA <= 2047:  
-                if TA > 0:
-                    obj = int(OPCODETAB[self.op][1], 16) 
-                    obj = obj << 4
-                    obj += flagConstructor(1, 1, 0, 0, 1, 0)
-                    obj = obj << 12
-                    obj += TA
-                else:
-                    obj = int(OPCODETAB[self.op][1], 16) 
-                    obj = obj << 4
-                    obj += flagConstructor(1, 1, 0, 0, 1, 0)
-                    obj = obj << 12
-                    obj += TA
+                if TA < 0:
+                    TA = twosComp(TA, 2) & int("0000111111111111", 2)
+                obj = int(OPCODETAB[self.op][1], 16) 
+                obj = obj << 4
+                obj += flagConstructor(1, 1, self.indexed, 0, 1, 0)
+                obj = obj << 12
+                obj += TA
             # Base Relative
             else:   
                 TA = self.SYMTAB[self.arg1] - self.BASE
                 if TA >= 0 and TA <= 4095:
                     obj = int(OPCODETAB[self.op][1], 16) 
                     obj = obj << 4
-                    obj += flagConstructor(1, 1, 0, 1, 0, 0)
+                    obj += flagConstructor(1, 1, self.indexed, 1, 0, 0)
                     obj = obj << 12
                     obj += TA
                 else:
