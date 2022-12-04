@@ -1,4 +1,5 @@
 from termcolor import colored
+from utils.tables import *
 import os
 
 if os.name == 'nt':
@@ -13,18 +14,18 @@ def parseLine(line: str) -> tuple:
     arg1 = ""
     arg2 = ""
     tokens = line.split()
-    if len(tokens) == 4:
-        symbol = tokens[0]
-        op = tokens[1]
-        arg1 = tokens[2]
-        arg2 = tokens[3]
-    elif len(tokens) == 3:
+    if len(tokens) == 3:
         symbol = tokens[0]
         op = tokens[1]
         arg1 = tokens[2]
     elif len(tokens) == 2:
         op = tokens[0]
-        arg1 = tokens[1]
+        args = tokens[1].split(',')
+        if len(args) == 2:
+            arg1 = args[0]
+            arg2 = args[1]
+        else:
+            arg1 = args[0]
     elif len(tokens) == 1:
         op = tokens[0]
     return symbol, op, arg1, arg2
@@ -38,5 +39,6 @@ def printSymtab(symtab: dict):
     print("{:<10} | {:<10}".format('SYMBOL', 'LOC'))
     print("-----------------------")
     for key, value in symtab.items():
-        print("{:<10} | {:<10}".format(key, hex(value)))
+        if key not in REGTAB.keys():
+            print("{:<10} | {:<10}".format(key, hex(value)))
     print("-----------------------")
