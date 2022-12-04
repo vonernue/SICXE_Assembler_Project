@@ -10,9 +10,12 @@ $ pip3 install -r ./requirements.txt
 ```
 
 ## Usage
-
-Usage: assembler.py [-h]
-                    [--output OUTPUT]
-                    [--symtab]
-                    input
-
+### Usage: assembler.py [-h] [-o OUTPUT] [-s SEPERATOR] [--symtab] input
+`-o`, `--output` 
+Output object code file to specified location.
+`-s`, `--seperator`
+Specify seperator for object code. Default = ""
+`--symtab`
+Show symbol table
+`h`, `--help`
+Show help message 

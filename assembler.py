@@ -180,8 +180,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Assembler for SIC/XE")
     parser.add_argument("input", help="SIC/XE assembly file")
     parser.add_argument("-o", "--output", help="Object code output location")
-    parser.add_argument("--symtab", action='store_true', help="Show symbol table")
     parser.add_argument("-s", "--seperator", default="", help="Seperator for object code")
+    parser.add_argument("--symtab", action='store_true', help="Show symbol table")
     args = parser.parse_args()
 
     if os.name == 'nt':
