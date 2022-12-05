@@ -214,7 +214,7 @@ class Handler:
             # PC Relative
             obj = int(OPCODETAB[self.op][1], 16) 
             obj = obj << 4
-            obj += flagConstructor(1, 1, 0, 0, 0, 1)
+            obj += flagConstructor(1, 1, self.indexed, 0, 0, 1)
             obj = obj << 20
             obj += TA
 
