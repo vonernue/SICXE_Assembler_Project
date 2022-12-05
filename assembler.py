@@ -12,6 +12,7 @@ SYMTAB = {}
 objList = []
 reservedSize = {}
 tList = []
+extendedList = []
 
 def firstPass(file):
     """
@@ -80,6 +81,8 @@ def secondPass(file):
             BASE = SYMTAB[arg1]
         else:
             if op[0] == '+':
+                if not (arg1[0] == '#' and arg1[1:].isdigit()):
+                    extendedList.append(PC+1)
                 PC += 4
             elif op == "BYTE":
                 if arg1[0] == 'c' or arg1[0] == 'C':
@@ -150,7 +153,10 @@ def genObjFile():
         else:
             line += 1
             tStart += reservedSize[line]
-            
+    for extended in extendedList:
+        objProg += "M^" + hex(extended)[2:].zfill(6).upper() + "^05\n"
+
+    objProg += "E^" + hex(START)[2:].zfill(6).upper()
                 
     return objProg
     
@@ -163,7 +169,8 @@ def main(args):
     firstPass(f)
     f = open(args.input, 'r')
     secondPass(f)
-    print(tList)
+    # print(tList)
+    print(extendedList)
     if args.symtab:
         printSymtab(SYMTAB)
     objProg = genObjFile()
