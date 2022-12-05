@@ -1,15 +1,6 @@
-import sys
 from utils.tables import *
+from utils.utils import *
 
-def flagConstructor(n, i, x, b, p, e):
-    """
-    Construct the flags for the object code.
-    """
-    return n << 5 | i << 4 | x << 3 | b << 2 | p << 1 | e
-
-def twosComp(val, bytes):
-    b = val.to_bytes(bytes, byteorder=sys.byteorder, signed=True)   
-    return int.from_bytes(b, byteorder=sys.byteorder, signed=False)
 
 class Handler:
     def __init__(self, line, symbol, op, arg1, arg2, PC, BASE, SYMTAB):
@@ -73,6 +64,9 @@ class Handler:
         
 
     def BYTE(self):
+        """
+        Handle BYTE memnomic
+        """
         if self.arg1[0] == 'c' or self.arg1[0] == 'C':
             beg = self.arg1.find("'")
             end = self.arg1.rfind("'")
@@ -88,9 +82,15 @@ class Handler:
             return obj.upper()
             
     def WORD(self):
+        """
+        Handle WORD memnomic
+        """
         return hex(int(self.arg1))[2:].zfill(6).upper()
 
     def format2(self):
+        """
+        Handle format2 instructions
+        """
         obj = int(OPCODETAB[self.op][1], 16)
         obj = obj << 4
         if self.arg1 != "":
@@ -101,6 +101,9 @@ class Handler:
         return hex(obj)[2:].zfill(4).upper()
 
     def format3(self):
+        """
+        Handle format3 instructions
+        """
         obj = 0
         if self.immediate:
             if self.arg1 in self.SYMTAB.keys():
@@ -108,7 +111,7 @@ class Handler:
                 # PC Relative
                 if TA >= -2048 and TA <= 2047:  
                     if TA < 0:
-                        TA = twosComp(TA, 2) & int("1111000000000000", 2)
+                        TA = twosComp(TA, 2) & int("0000111111111111", 2)
                     obj = int(OPCODETAB[self.op][1], 16) 
                     obj = obj << 4
                     obj += flagConstructor(0, 1, 0, 0, 1, 0)
@@ -138,7 +141,7 @@ class Handler:
             # PC Relative
             if TA >= -2048 and TA <= 2047:  
                 if TA < 0:
-                    TA = twosComp(TA, 2) & int("1111000000000000", 2)
+                    TA = twosComp(TA, 2) & int("0000111111111111", 2)
                 obj = int(OPCODETAB[self.op][1], 16) 
                 obj = obj << 4
                 obj += flagConstructor(1, 0, 0, 0, 1, 0)
@@ -183,6 +186,9 @@ class Handler:
         return hex(obj)[2:].zfill(6).upper()
         
     def format4(self):
+        """
+        Handle format4 instructions
+        """
         obj = 0
         if self.immediate:
             if self.arg1 in self.SYMTAB.keys():
