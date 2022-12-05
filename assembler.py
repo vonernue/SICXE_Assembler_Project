@@ -110,7 +110,7 @@ def secondPass(file):
             
 def genObjFile():
     """
-    Generate object file
+    Generate object Program
     """
     global PROGNAME
     global START

@@ -46,7 +46,7 @@ def printSymtab(symtab: dict):
 
 def flagConstructor(n, i, x, b, p, e):
     """
-    Construct the flags for the object code.
+    Construct flags for the object code.
     """
     return n << 5 | i << 4 | x << 3 | b << 2 | p << 1 | e
 
