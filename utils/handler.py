@@ -141,7 +141,7 @@ class Handler:
                     TA = twosComp(TA, 2) & int("1111000000000000", 2)
                 obj = int(OPCODETAB[self.op][1], 16) 
                 obj = obj << 4
-                obj += flagConstructor(1, 0, 0, 0, 0, 0)
+                obj += flagConstructor(1, 0, 0, 0, 1, 0)
                 obj = obj << 12
                 obj += TA
             # Base Relative
@@ -199,7 +199,7 @@ class Handler:
                 obj = int(OPCODETAB[self.op][1], 16)
                 obj = obj << 4
                 obj += flagConstructor(0, 1, 0, 0, 0, 1)
-                obj = obj << 12
+                obj = obj << 20
                 obj += TA
         elif self.indirect:
             TA = self.SYMTAB[self.arg1]
